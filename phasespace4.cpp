@@ -2,6 +2,7 @@
 #include "TGenPhaseSpace.h"
 #include "TLorentzVector.h"
 #include "TH1D.h"
+#include <iostream>
 
 void phasespace4()
 {
@@ -42,8 +43,8 @@ for(int i = 0; i < iter; i++)
 	     n_min = 0;
   }
 
-cout<<"ratio: "<< static_cast<double>(accepted)/total<<endl;
-cout<<"total: "<< total<<endl;
-cout<<"accepted: "<< accepted<<endl;
+std::cout<<"ratio: "<< static_cast<double>(accepted)/total<<std::endl;
+std::cout<<"total: "<< total<<std::endl;
+std::cout<<"accepted: "<< accepted<<std::endl;
 
 }

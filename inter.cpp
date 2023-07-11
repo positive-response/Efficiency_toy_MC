@@ -3,6 +3,7 @@
 #include <fstream>
 #include "TGraph.h"
 #include "TCanvas.h"
+#include "TSpline.h"
 
 using namespace std;
 

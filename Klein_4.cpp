@@ -4,12 +4,13 @@
 #include <algorithm>
 #include <TGraph.h>
 #include "TMath.h"
-#include<TRandom.h>
+#include <TRandom.h>
 #include "TGenPhaseSpace.h"
 #include "TLorentzVector.h"
 #include "TH1D.h"
+#include "TFile.h"
 #include "TEfficiency.h"
-
+#include <TRandom3.h>
 using namespace std;
 
 double klein(double , double );      // calculation of cross section
@@ -142,7 +143,7 @@ void Klein_4()
 	double E = 0.0;
 	double sigma = 0.0;
 	double E_smear = 0.0;
-	for(int i = 0; i < Edep_small.size(); i++)
+	for(int i = 0; i < static_cast<int>(Edep_small.size()); i++)
 	{
 		E = Edep_small[i];
 		sigma = (E * 0.044)/(sqrt(E/1000));
