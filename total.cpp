@@ -4,8 +4,8 @@
 
 double total()
 {
-double geometrical_eff = Klein_4();
-double registration_eff = phasespace4();
+double geometrical_eff = phasespace4();
+double registration_eff = Klein_4();
 double detection_eff = inter();
 
 double total_eff = geometrical_eff * registration_eff * detection_eff;
