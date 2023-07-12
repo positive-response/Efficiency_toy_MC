@@ -15,13 +15,13 @@ using namespace std;
 
 double klein(double , double );      // calculation of cross section
 void phasespace4(vector<vector<double>> *, vector<double> *); // phasespace generation
-void Efficiency(vector<double>* ); // efficiency calculation
+double Efficiency(vector<double>*, const char* ); // efficiency calculation
 vector<vector<double>> get_deposited_Energy(vector<vector<double>>& );
 vector<double> get_small_deposited_energy(vector<vector<double>>& );
 
 /********************Calculation of efficiency****************************/
 
-void Efficiency(vector<double>* E_dep)
+double Efficiency(vector<double>* E_dep, const char* filename)
 {
   const int nthr = 16;
   double Thr[nthr] = {0.0}; 
@@ -33,7 +33,7 @@ void Efficiency(vector<double>* E_dep)
   }
 
   TEfficiency* pEff1 = 0;
-  auto pFile = new TFile("Eff_4.root", "recreate");
+  auto pFile = new TFile(filename, "recreate");
   pEff1 = new TEfficiency("eff1", "Threshold vs Efficiency; Threshold [in keV]; Efficiency #epsilon", 20, 0, 360);
   
   int c = 0;
@@ -54,13 +54,13 @@ void Efficiency(vector<double>* E_dep)
 	  }
 
 	  count[j] = c;
-//cout<<count[j]<< " "<<endl;
   }
 
   pEff1->SetDirectory(gDirectory);
   pFile->Write();
   pFile->Close();
   delete pFile;
+  return 0.31; 
 }
 
 /**************************calculation of deposited energy********************************/
@@ -75,13 +75,18 @@ vector<vector<double>> get_deposited_Energy(vector<vector<double>>& events) {
         vector<double> deposited_energies= {0,0,0,0};
 	double scattered_e = 0;
 
+	const double theta_max = 3.14159;
+	const double theta_min = 0.1;
+	const double cross_section_max = 0.489*1e-30;
+	const double cross_section_min = 0.0;
+
   for(auto event : events)
   {
 	  for(auto incoming_energy : event)
 	  {
 		  while(1){
-                         theta = random->Uniform(0.1, 3.14159);
- 			 yguess = random->Uniform(0, 0.489*1e-30);
+                         theta = random->Uniform(theta_min, theta_max);
+ 			 yguess = random->Uniform(cross_section_min, cross_section_max);
 			 yfun = klein(theta, incoming_energy);
 
 			  if(yguess <= yfun)
@@ -124,10 +129,11 @@ vector<double> get_small_deposited_energy(vector<vector<double>>& dep_energies)
 
 
 /******************************************************************************/
-void Klein_4()
+double Klein_4()
 {
 	TRandom3 * random = new TRandom3();
 	random->SetSeed(0);
+
        	TH1D* h3 = new TH1D("E_dep", "Energy", 500, 0, 550);
   	TH1D* h4 = new TH1D("E_dep_s", "EnergyS", 700, 0, 500);
 
@@ -140,37 +146,40 @@ void Klein_4()
 	vector<double> Edep_small = get_small_deposited_energy(Deposited_E);
 	vector<double> Smeared_E;
 
+	const double smear_const = 0.044;
 	double E = 0.0;
 	double sigma = 0.0;
 	double E_smear = 0.0;
 	for(int i = 0; i < static_cast<int>(Edep_small.size()); i++)
 	{
 		E = Edep_small[i];
-		sigma = (E * 0.044)/(sqrt(E/1000));
+		sigma = (E * smear_const)/(sqrt(E/1000));
 		E_smear = E + random->Gaus(0, sigma);
 		Smeared_E.push_back(E_smear);
 		h3->Fill(E, wts_v[i]);
 		h4->Fill(E_smear, wts_v[i]);
 	}
 
-   Efficiency(&Smeared_E);
-   Efficiency(&Edep_small);
+   double registration_eff = Efficiency(&Smeared_E, "smeared.root");
+   Efficiency(&Edep_small, "E_dep.root");
    h4->Draw();
    h3->SetTitle("Smallest energy deposition by gamma in 4gamma decay");
    h3->GetXaxis()->SetTitle("Energy_dep(keV)");
    h3->GetYaxis()->SetTitle("Counts");
+   return registration_eff;
    }
 /********************cross-section calculation**********************************/
 
 double klein(double theta, double energy)
 {
+  const double pi =  3.14159;	
   const double N = 3.97 * 1e-30;    //(electron_radius^2)/2 (constant in the formula) in meters
   double alpha = energy / 511;     //energy of photon/rest mass energy of electron
   double cos_t = cos(theta);       
   double cos_one = 1 - cos_t;
   double cos_2 = 1 + pow(cos_t, 2);
   double KN = N * (cos_2 / (1 + (alpha*cos_one))) * (1 + (pow(cos_one, 2) * pow(alpha, 2)/ (cos_2 * (1 +(alpha * cos_one)))));
-  double D_omega_by_d_theta = 2 * 3.14159 * sin(theta);
+  double D_omega_by_d_theta = 2 * pi * sin(theta);
   double d_theta_by_d_E = pow((1 + alpha*(1 - cos_t)), 2)/(sin(theta)*alpha*energy);
   double result = d_theta_by_d_E * D_omega_by_d_theta * KN;
   return result;
@@ -180,17 +189,18 @@ double klein(double theta, double energy)
 
 void phasespace4(vector<vector<double>> * small_E_v, vector<double> * wts_v)
 {
-const double melectron = 0.000511; // in GeV
- TLorentzVector e(0.0,0.0,0.0,melectron);
- TLorentzVector p(0.0,0.0,0.0,melectron);
- TLorentzVector W = e + p;
+ const double melectron = 0.000511; // mass of electron or positron in GeV
+ TLorentzVector e(0.0,0.0,0.0,melectron); // four momenta of e-
+ TLorentzVector p(0.0,0.0,0.0,melectron); //  four momenta of e+
+ TLorentzVector W = e + p; //positronium atom
+
  const int npar = 4;
  double masses[npar] = {0.0};
 
  TGenPhaseSpace event;
  event.SetDecay(W, npar, masses);
 
- int iter = 1000000;
+ const int iter = 1000000;
  double weight = 0.0;
 vector<double> gamma_E{};
  

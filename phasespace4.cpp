@@ -4,7 +4,7 @@
 #include "TH1D.h"
 #include <iostream>
 
-void phasespace4()
+double phasespace4()
 {
 
 const  double melectron = 0.000511; // in GeV                                                                                                 
@@ -46,5 +46,5 @@ for(int i = 0; i < iter; i++)
 std::cout<<"ratio: "<< static_cast<double>(accepted)/total<<std::endl;
 std::cout<<"total: "<< total<<std::endl;
 std::cout<<"accepted: "<< accepted<<std::endl;
-
+return static_cast<double>(accepted)/total;
 }
