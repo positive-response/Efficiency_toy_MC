@@ -24,6 +24,8 @@ double gamma_theta[npar]={0.0};
 int total = 0;
 int accepted = 0;
 int n_min = 0;
+const double theta_min = 1.0472;
+const double theta_max = 2.0944;
 
 for(int i = 0; i < iter; i++)
    {
@@ -35,7 +37,7 @@ for(int i = 0; i < iter; i++)
 	   {
 		   TLorentzVector *gamma = event.GetDecay(j);
                    gamma_theta[j] = gamma->Theta();
-		  if (gamma_theta[j] > 1.0472 & gamma_theta[j] < 2.0944)
+		  if (gamma_theta[j] > theta_min & gamma_theta[j] < theta_max)
 	     		  n_min++;
 	   }
 	     if (n_min >= 3)
@@ -43,8 +45,8 @@ for(int i = 0; i < iter; i++)
 	     n_min = 0;
   }
 
-std::cout<<"ratio: "<< static_cast<double>(accepted)/total<<std::endl;
-std::cout<<"total: "<< total<<std::endl;
-std::cout<<"accepted: "<< accepted<<std::endl;
+//std::cout<<"ratio: "<< static_cast<double>(accepted)/total<<std::endl;
+//std::cout<<"total: "<< total<<std::endl;
+//std::cout<<"accepted: "<< accepted<<std::endl;
 return static_cast<double>(accepted)/total;
 }
