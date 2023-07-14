@@ -60,7 +60,22 @@ double Efficiency(vector<double>* E_dep, const char* filename)
   pFile->Write();
   pFile->Close();
   delete pFile;
-  return 0.31; 
+/************************Efficiency corresponsing to 30 keV**************************/
+  const double fixed_thr = 30.0; //in keV
+  int ct = 0;
+  double ratio = 0.0;
+  int total_count1 = E_dep->size();
+  for(auto En : *E_dep)
+  {
+	  if (fixed_thr > En)
+		  ct++;
+  }
+
+  ratio = static_cast<double>(ct)/total_count1;
+  std::cout<<"ratio:"<<ratio<<std::endl;
+  std::cout<<"ct:"<<ct<<std::endl;
+  std::cout<<"total_count1:"<<total_count1<<std::endl;
+  return ratio; 
 }
 
 /**************************calculation of deposited energy********************************/
@@ -161,7 +176,7 @@ double Klein_4()
 	}
 
    double registration_eff = Efficiency(&Smeared_E, "smeared.root");
-   Efficiency(&Edep_small, "E_dep.root");
+//   Efficiency(&Edep_small, "E_dep.root");
    h4->Draw();
    h3->SetTitle("Smallest energy deposition by gamma in 4gamma decay");
    h3->GetXaxis()->SetTitle("Energy_dep(keV)");
