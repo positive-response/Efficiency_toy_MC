@@ -6,8 +6,6 @@
 
 double phasespace4()
 {
-
-const int tmp bla =0;
 const  double melectron = 0.000511; // in GeV                                                                                                 
 TLorentzVector e(0.0,0.0,0.0,melectron);
 TLorentzVector p(0.0,0.0,0.0,melectron);
@@ -50,4 +48,9 @@ for(int i = 0; i < iter; i++)
 //std::cout<<"total: "<< total<<std::endl;
 //std::cout<<"accepted: "<< accepted<<std::endl;
 return static_cast<double>(accepted)/total;
+}
+
+int main()
+{
+  std::cout << phasespace4() << std::endl;;
 }
