@@ -11,6 +11,7 @@
 #include "TFile.h"
 #include "TEfficiency.h"
 #include <TRandom3.h>
+#include <vector>
 using namespace std;
 
 double klein(double , double );      // calculation of cross section
@@ -18,6 +19,7 @@ void phasespace4(vector<vector<double>> *, vector<double> *); // phasespace gene
 double Efficiency(vector<double>*, const char* ); // efficiency calculation
 vector<vector<double>> get_deposited_Energy(vector<vector<double>>& );
 vector<double> get_small_deposited_energy(vector<vector<double>>& );
+
 
 /********************Calculation of efficiency****************************/
 
@@ -182,6 +184,8 @@ double Klein_4()
    h3->GetXaxis()->SetTitle("Energy_dep(keV)");
    h3->GetYaxis()->SetTitle("Counts");
    return registration_eff;
+   //std::cout<<"reg_eff:"<<registration_eff<<std::endl;
+    // return 1;
    }
 /********************cross-section calculation**********************************/
 
@@ -232,4 +236,13 @@ vector<double> gamma_E{};
 small_E_v->push_back(gamma_E); 
 gamma_E.clear();
    }
-}                                                                  
+}
+
+int main()
+{
+	//double registration =  Klein_4();
+	std::cout<<"reg_eff"<< Klein_4()<<std::endl;
+	return 1;
+}
+
+
