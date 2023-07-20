@@ -18,7 +18,7 @@ event.SetDecay(W,npar,masses);
 
 int iter = 1000000;
 double weight = 0.0;
-double gamma_E[npar]={0.0};
+//double gamma_E[npar]={0.0};
 double gamma_theta[npar]={0.0};
 int total = 0;
 int accepted = 0;
@@ -36,7 +36,7 @@ for(int i = 0; i < iter; i++)
 	   {
 		   TLorentzVector *gamma = event.GetDecay(j);
                    gamma_theta[j] = gamma->Theta();
-		  if (gamma_theta[j] > theta_min & gamma_theta[j] < theta_max)
+		  if ((gamma_theta[j] > theta_min) & (gamma_theta[j] < theta_max))
 	     		  n_min++;
 	   }
 	     if (n_min >= 3)

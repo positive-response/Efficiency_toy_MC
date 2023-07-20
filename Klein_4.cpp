@@ -74,9 +74,9 @@ double Efficiency(vector<double>* E_dep, const char* filename)
   }
 
   ratio = static_cast<double>(ct)/total_count1;
-  std::cout<<"ratio:"<<ratio<<std::endl;
-  std::cout<<"ct:"<<ct<<std::endl;
-  std::cout<<"total_count1:"<<total_count1<<std::endl;
+  //std::cout<<"ratio:"<<ratio<<std::endl;
+  //std::cout<<"ct:"<<ct<<std::endl;
+ // std::cout<<"total_count1:"<<total_count1<<std::endl;
   return ratio; 
 }
 
@@ -157,7 +157,7 @@ double Klein_4()
   	vector<vector<double>> small_E_v;
   	vector<double> wts_v;
   	
-  	const int nparticles = 4;
+  	//const int nparticles = 4;
   	phasespace4(&small_E_v, &wts_v);
   	vector<vector<double>> Deposited_E = get_deposited_Energy(small_E_v);
 	vector<double> Edep_small = get_small_deposited_energy(Deposited_E);

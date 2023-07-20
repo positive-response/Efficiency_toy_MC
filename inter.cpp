@@ -14,12 +14,13 @@ double inter1(double en)
         double mu[36] = {2024, 640.9, 277, 82.7, 34.61, 17.53, 10.05, 4.22, 2.204, 0.7705, 0.4358, 0.2647, 0.2194, 0.1997, 0.1881, 0.1736, 0.1635, 0.1458, 0.1331, 0.1155, 0.1034, 0.09443, 0.08732, 0.07668, 0.06894, 0.06166, 0.05611, 0.0481, 0.03848, 0.03282, 0.02907, 0.02641, 0.0229, 0.02069, 0.0177, 0.01624};
 
         const double d = 2; //in cm
+	const double density = 1.03; //density of plastic 
         double fun[36] = {0.0};
 	double interpolated_mu = 0.0;
 
         for(int i = 0; i < 36; i++)
         {
-         fun[i] = 1 - exp(-(mu[i]*d)); //probability of gamma interaction in plastic scintillator based on gamma energy
+         fun[i] = 1 - exp(-(mu[i]*density*d)); //probability of gamma interaction in plastic scintillator based on gamma energy
         }
 
 //	TCanvas * c = new TCanvas("canvas", "E vs mu", 900, 800);
@@ -33,11 +34,11 @@ double inter1(double en)
 	return interpolated_mu;
 }
 
-int inter()
+int main()
 {
-	double en_511 = inter1(0.511);
-	double en_1274 = inter1(1.274);
-	std::cout<<"511:" <<en_511<<"  "<<"1274: "<< en_1274<<std::endl;
+//	double en_511 = inter1(0.511);
+//	double en_1274 = inter1(1.274);
+	std::cout<<"511: " <<inter1(0.511)<<"  "<<"1274: "<<inter1(1.274)<<std::endl;
 	return 1;
 }
 
