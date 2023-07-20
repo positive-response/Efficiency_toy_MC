@@ -1,1 +1,0 @@
-/usr/bin/c++   -std=c++14 -pipe -fsigned-char -pthread -rdynamic CMakeFiles/test.exe.dir/test.cpp.o -o test.exe 
