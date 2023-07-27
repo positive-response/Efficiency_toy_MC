@@ -10,16 +10,16 @@ find_package(ROOT 6.18 CONFIG REQUIRED COMPONENTS Core RIO Hist RooStats Graf Gr
 include("${ROOT_USE_FILE}")
 
 
-add_executable(phaspace4.exe phasespace4.cpp)
-target_link_libraries(phaspace4.exe PUBLIC ROOT::Physics ROOT::Core ROOT::Tree ROOT::RIO ROOT::Net ROOT::Hist ROOT::RooStats ROOT::Graf ROOT::Graf3d ROOT::ROOTDataFrame)
-target_compile_options(phaspace4.exe PRIVATE -Wall -std=c++14)
+add_executable(GeometricalEfficiency.exe GeometricalEfficiency.cpp)
+target_link_libraries(GeometricalEfficiency.exe PUBLIC ROOT::Physics ROOT::Core ROOT::Tree ROOT::RIO ROOT::Net ROOT::Hist ROOT::RooStats ROOT::Graf ROOT::Graf3d ROOT::ROOTDataFrame)
+target_compile_options(GeometricalEfficiency.exe PRIVATE -Wall -std=c++14)
 
-add_executable(klein.exe Klein_4.cpp)
-target_link_libraries(klein.exe PUBLIC ROOT::Physics ROOT::Core ROOT::Tree ROOT::RIO ROOT::Net ROOT::Hist ROOT::RooStats ROOT::Graf ROOT::Graf3d ROOT::ROOTDataFrame)
-target_compile_options(klein.exe PRIVATE -Wall -std=c++14)
+add_executable(RegistrationEfficiency.exe RegistrationEfficiency.cpp)
+target_link_libraries(RegistrationEfficiency.exe PUBLIC ROOT::Physics ROOT::Core ROOT::Tree ROOT::RIO ROOT::Net ROOT::Hist ROOT::RooStats ROOT::Graf ROOT::Graf3d ROOT::ROOTDataFrame)
+target_compile_options(RegistrationEfficiency.exe PRIVATE -Wall -std=c++14)
 
-add_executable(inter.exe inter.cpp)
-target_compile_options(inter.exe PRIVATE -Wall -std=c++14)
-target_link_libraries(inter.exe PUBLIC ROOT::Physics ROOT::Core ROOT::Tree ROOT::RIO ROOT::Net ROOT::Hist ROOT::RooStats ROOT::Graf ROOT::Graf3d ROOT::ROOTDataFrame)
+add_executable(DetectionEfficiency.exe DetectionEfficiency.cpp)
+target_compile_options(DetectionEfficiency.exe PRIVATE -Wall -std=c++14)
+target_link_libraries(DetectionEfficiency.exe PUBLIC ROOT::Physics ROOT::Core ROOT::Tree ROOT::RIO ROOT::Net ROOT::Hist ROOT::RooStats ROOT::Graf ROOT::Graf3d ROOT::ROOTDataFrame)
 
 
