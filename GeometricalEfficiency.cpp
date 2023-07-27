@@ -4,6 +4,23 @@
 #include "TH1D.h"
 #include <iostream>
 
+using namespace std;
+
+double getGeometricalEfficieny(const double , const double, const int);
+double* calculateAcceptance(const double, const double);
+
+int main()
+{
+	const double radiusOfDetector = 42.5;  // in cm 
+	const double half_lengthOfDetector = 25.0;  //in cm
+	double * thetaLimits = calculateAcceptance(radiusOfDetector, half_lengthOfDetector);
+	const double mininumTheta = *(thetaLimits + 0);
+	const double maximumTheta = *(thetaLimits + 1);
+	const int minimumNumberOfGamma = 3;
+        std::cout << getGeometricalEfficieny(mininumTheta, maximumTheta, minimumNumberOfGamma) << std::endl;
+}
+
+/************************************************************************************************************/
 double getGeometricalEfficieny(const double theta_min = 1.0472, const double theta_max = 2.0944, const int minimumNumberOfGamma = 3)
 {
 const  double electron_mass = 0.000511; // in GeV                                                                                                 
@@ -39,17 +56,16 @@ for(int i = 0; i < iteration; i++)
 		     accepted++;
 	     n_min = 0;
   }
-
-//std::cout<<"ratio: "<< static_cast<double>(accepted)/total<<std::endl;
-//std::cout<<"total: "<< total<<std::endl;
-//std::cout<<"accepted: "<< accepted<<std::endl;
 return static_cast<double>(accepted)/total;
 }
-
-int main()
+/*****************************************************************************************/
+double* calculateAcceptance(const double radius = 42.5, const double half_length = 25.0)
 {
-	const double mininumTheta = 1.0472;
-	const double maximumTheta = 2.0944;
-	const int minimumNumberOfGamma = 2;
-  std::cout << getGeometricalEfficieny(mininumTheta, maximumTheta, minimumNumberOfGamma) << std::endl;;
+
+	const double minimumAcceptance = TMath::ATan(radius/half_length);
+	const double maximumAcceptance = 2 * minimumAcceptance;
+	static double acceptanceLimits[2] = {minimumAcceptance, maximumAcceptance};
+
+	return acceptanceLimits;
 }
+
