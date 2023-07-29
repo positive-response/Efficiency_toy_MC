@@ -12,13 +12,17 @@
 #include "TEfficiency.h"
 #include <TRandom3.h>
 #include <vector>
+
+#include "RegistrationEfficiency.h"
+
 using namespace std;
 
 double calculateCross_Section(double , double );      // calculation of cross section
-void calculatePhasespaceEnergy(vector<vector<double>> *, vector<double> *); // phasespace generation
-double getRegistrationEfficiency(vector<double>*, const char*, const double ); // efficiency calculation
+//RegistrationEfficiency::calculatePhasespaceEnergy(vector<vector<double>> *, vector<double> *); // phasespace generation
+/*double getRegistrationEfficiency(vector<double>*, const char*, const double ); // efficiency calculation
 vector<vector<double>> get_deposited_Energy(vector<vector<double>>& );
 vector<double> getSmallestDepositedEnergy(vector<vector<double>>& );
+*/
 
 
 /********************Calculation of efficiency****************************/
@@ -143,14 +147,14 @@ int main()
 	TRandom3 * random = new TRandom3();
 	random->SetSeed(0);
 
-       	TH1D* h3 = new TH1D("energiesWithSmearing", "Energy", 500, 0, 550);
-  	TH1D* h4 = new TH1D("energiesWithSmearing_s", "EnergyS", 700, 0, 500);
+//    	TH1D* h3 = new TH1D("energiesWithSmearing", "Energy", 500, 0, 550);
+//  	TH1D* h4 = new TH1D("energiesWithSmearing_s", "EnergyS", 700, 0, 500);
 
   	vector<vector<double>> perEventPhotonEnergies;
   	vector<double> perEventWeight;
 	vector<double> energiesWithSmearing;
   	
-  	calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);
+  	RegistrationEfficiency::calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);
 
   	vector<vector<double>> perEvntDepositedEnergies = get_deposited_Energy(perEventPhotonEnergies);
 	vector<double> perEventSmallestDepositedEnergy = getSmallestDepositedEnergy(perEvntDepositedEnergies);
@@ -193,9 +197,9 @@ double calculateCross_Section(double theta, double energy)
   return differentialCross_section;
 }
 /*****************************Phasespace calculation******************************************/
+/*
 
-
-void calculatePhasespaceEnergy(vector<vector<double>> * perEventPhotonEnergies, vector<double> * perEventWeight)
+int RegistrationEfficiency::calculatePhasespaceEnergy(std::vector<std::vector<double>> * perEventPhotonEnergies, std::vector<double> * perEventWeight)
 {
  const double electron_mass = 0.000511; // mass of electron or positron in GeV
  TLorentzVector electron(0.0,0.0,0.0,electron_mass); // four momenta of e-
@@ -217,7 +221,7 @@ void calculatePhasespaceEnergy(vector<vector<double>> * perEventPhotonEnergies, 
      weight = event.Generate();
      perEventWeight->push_back(weight);
 
-     for(int j = 0; j< numberOfDaughterParticles; j++)
+     for(int j = 0; j < numberOfDaughterParticles; j++)
        {
          TLorentzVector *gamma = event.GetDecay(j);
 	 energiesOfGamma.push_back(gamma->E() * 1000 * 1000); //From MeV to keV
@@ -225,4 +229,5 @@ void calculatePhasespaceEnergy(vector<vector<double>> * perEventPhotonEnergies, 
 perEventPhotonEnergies->push_back(energiesOfGamma); 
 energiesOfGamma.clear();
    }
-}
+   return 0;
+}*/
