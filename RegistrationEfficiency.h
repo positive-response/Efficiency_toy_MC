@@ -34,7 +34,7 @@ class RegistrationEfficiency
 		for(int j = 0; j < numberOfDaughterParticles ; j++)
 		{
 			TLorentzVector *gamma = event.GetDecay(j);
-			energiesOfGamma.push_back(gamma->E() * 1000 ); //From MeV to keV
+			energiesOfGamma.push_back(gamma->E() * 1000); //From GeV to MeV
 		}
 		perEventPhotonEnergies->push_back(energiesOfGamma); 
 		energiesOfGamma.clear();
@@ -44,7 +44,4 @@ class RegistrationEfficiency
 
 
 };
-
-
-
 #endif

@@ -19,17 +19,16 @@ using namespace std;
 
 double calculateCross_Section(double , double );      // calculation of cross section
 //RegistrationEfficiency::calculatePhasespaceEnergy(vector<vector<double>> *, vector<double> *); // phasespace generation
-/*double getRegistrationEfficiency(vector<double>*, const char*, const double ); // efficiency calculation
-vector<vector<double>> get_deposited_Energy(vector<vector<double>>& );
+double getRegistrationEfficiency(vector<double>*, const char*, const double ); // efficiency calculation
+vector<vector<double>> getDepositedEnergy(vector<vector<double>>& );
 vector<double> getSmallestDepositedEnergy(vector<vector<double>>& );
-*/
 
 
 /********************Calculation of efficiency****************************/
 
 double getRegistrationEfficiency(vector<double>* energiesWithSmearing, const char* filename, const double lowerThreshold = 30.0)
 {
-  const int numberOfThreshold = 16;
+  const int numberOfThreshold = 20;
   double Thresholds[numberOfThreshold] = {0.0}; 
 
   for(int k = 0; k < numberOfThreshold; k++)
@@ -52,7 +51,6 @@ double getRegistrationEfficiency(vector<double>* energiesWithSmearing, const cha
 	  for(double smearEnergy : *energiesWithSmearing)
 	  {
 		  bPassed = smearEnergy > threshold;
-		  if(bPassed)
 		  pEff1->Fill(bPassed, threshold);
 	  }
   }
@@ -77,7 +75,7 @@ double getRegistrationEfficiency(vector<double>* energiesWithSmearing, const cha
 }
 
 /**************************calculation of deposited energy********************************/
-vector<vector<double>> get_deposited_Energy(vector<vector<double>>& perEventPhotonEnergies) { 
+vector<vector<double>> getDepositedEnergy(vector<vector<double>>& perEventPhotonEnergies) { 
         TRandom3 * random = new TRandom3();
 	random->SetSeed(0);
 
@@ -92,25 +90,27 @@ vector<vector<double>> get_deposited_Energy(vector<vector<double>>& perEventPhot
 	const double theta_min = 0.1;
 	const double maximumCross_Section = 0.489*1e-30;
 	const double minimumCross_Section = 0.0;
+	double alpha = 0.0;
 
   for(auto event : perEventPhotonEnergies)
   {
 	  for(auto incoming_energy : event)
 	  {
 		  while(1){
-                         theta = random->Uniform(theta_min, theta_max);
- 			 guessedCross_section = random->Uniform(minimumCross_Section, maximumCross_Section);
-			 calculatedCross_section = calculateCross_Section(theta, incoming_energy);
+			  alpha =  incoming_energy/0.511;
+                          theta = random->Uniform(theta_min, theta_max);
+ 			  guessedCross_section = random->Uniform(minimumCross_Section, maximumCross_Section);
+			  calculatedCross_section = calculateCross_Section(theta, incoming_energy);
 
-			  if(guessedCross_section <= calculatedCross_section)
+	       		  if(guessedCross_section <= calculatedCross_section)
 			  {
-				  scatteredGammaEnergy = incoming_energy/(1 + (1 - cos(TMath::RadToDeg()*theta)));
-                    	          deposited_energies.push_back(incoming_energy -scatteredGammaEnergy);
-                    		  break;
+				  scatteredGammaEnergy = incoming_energy/(1 + alpha * (1 - cos(TMath::RadToDeg()*theta)));
+				  deposited_energies.push_back(incoming_energy - scatteredGammaEnergy);
+				  break;
 			  }
-		
 		  }
 	  }
+
 	  perEventDepEnergy.push_back(deposited_energies);
           deposited_energies.clear();
 	  guessedCross_section = 0.0;
@@ -134,12 +134,11 @@ vector<double> getSmallestDepositedEnergy(vector<vector<double>>& perEvntDeposit
 			if (depositedGammaEnergy < smallestEnergy)
                                 smallestEnergy = depositedGammaEnergy;
 		}
-		smallestDepositedEnergy.push_back(smallestEnergy);
+		smallestDepositedEnergy.push_back(smallestEnergy * 1000);   //from MeV to keV
 	}
 	return smallestDepositedEnergy;
 
 }
-
 
 /******************************************************************************/
 int main()
@@ -154,9 +153,9 @@ int main()
   	vector<double> perEventWeight;
 	vector<double> energiesWithSmearing;
   	
-  	RegistrationEfficiency::calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);
+  	RegistrationEfficiency::calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);  //energies are in MeV
 
-  	vector<vector<double>> perEvntDepositedEnergies = get_deposited_Energy(perEventPhotonEnergies);
+  	vector<vector<double>> perEvntDepositedEnergies = getDepositedEnergy(perEventPhotonEnergies);
 	vector<double> perEventSmallestDepositedEnergy = getSmallestDepositedEnergy(perEvntDepositedEnergies);
 	
 

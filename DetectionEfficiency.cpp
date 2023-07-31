@@ -4,7 +4,12 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include "TH2D.h"
+#include "TFile.h"
 #include <vector>
+#include "RegistrationEfficiency.h"
+
+
 
 using namespace std;
 
@@ -15,13 +20,12 @@ public:
 		Spline_interpolator = new TSpline5("grs", Graph);
 	}
 	double getDetectionEfficiency(double inEnergy) { 
-		return Spline_interpolator->Eval(inEnergy);
+		return Spline_interpolator->Eval(inEnergy); //Provide energy in MeV
 	}
 private:
 	TGraph *Graph = nullptr;
 	TSpline5 *Spline_interpolator = nullptr;
 };
-
 // Calculates probabilities of gamma interaction in plastic scintillator based
 // on gamma energy and saves it to a text file
 void saveDetectionEfficiencyProbabilites(double detectorThickness = 2, const char *outFile = "regEffProbs.txt") {
@@ -35,7 +39,7 @@ void saveDetectionEfficiencyProbabilites(double detectorThickness = 2, const cha
       0.001, 0.0015, 0.002, 0.003, 0.004, 0.005, 0.006, 0.008, 0.01,
       0.015, 0.02,   0.03,  0.04,  0.05,  0.06,  0.08,  0.1,   0.15,
       0.2,   0.3,    0.4,   0.5,   0.6,   0.8,   1,     1.25,  1.5,
-      2,     3,      4,     5,     6,     8,     10,    15,    20};
+      2,     3,      4,     5,     6,     8,     10,    15,    20}; //Energies in MeV
 
   double mass_attenuation_coeff[numberOfElements] = {
       2024,    640.9,   277,     82.7,   34.61,   17.53,   10.05,   4.22,
@@ -52,16 +56,41 @@ void saveDetectionEfficiencyProbabilites(double detectorThickness = 2, const cha
   } 
   file.close();
   }
-
 }
 
 int main() {
 
+  TH2D* h1 = new TH2D("inEnergyVsDetEff", "Incoming Energy vs detection efficiency", 100, 0, 1, 100, 0, 100);
+  auto pFile = new TFile("EnergyvsEFF.root ", "recreate");
   const char *outFile = "regEffProbs.txt";
-  saveDetectionEfficiencyProbabilites(2.0, outFile); 
-  DetectionEfficiencyInterpolator detectionEfficiency(outFile);
-  std::cout << detectionEfficiency.getDetectionEfficiency(0.511) << std::endl;
 
+  const double detectorThickness = 2.0; // in cm 
+  saveDetectionEfficiencyProbabilites(detectorThickness, outFile); 
+  DetectionEfficiencyInterpolator detectionEfficiency(outFile);
+
+  vector<double> perEventWeight{};
+  vector<vector<double>> perEventPhotonEnergies{};
+  vector<double> perEnergyDetEfficiency{};
+  RegistrationEfficiency::calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);
+  for(auto incomingEnergies : perEventPhotonEnergies)
+  {
+	  for(auto incomingEnergy : incomingEnergies)
+	  {
+          perEnergyDetEfficiency.push_back(detectionEfficiency.getDetectionEfficiency(incomingEnergy));
+	  
+	  h1->Fill(incomingEnergy, detectionEfficiency.getDetectionEfficiency(incomingEnergy)*100);
+  
+  }
+  }
+//  h1->SetTitle("Smallest energy deposition by gamma in 4gamma decay");
+  h1->GetXaxis()->SetTitle("Gamma_Icoming_Energy(MeV)");
+  h1->GetYaxis()->SetTitle("Detection Efficiency #epsilon");
+  h1->SetDirectory(gDirectory);
+  pFile->Write();
+  pFile->Close();
+  delete pFile;
+  std::cout << detectionEfficiency.getDetectionEfficiency(0.511) << std::endl;   //energy in MeV
+  
   return 0;
 }
 
