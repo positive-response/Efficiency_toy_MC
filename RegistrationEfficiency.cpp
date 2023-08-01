@@ -153,7 +153,9 @@ int main()
   	vector<double> perEventWeight;
 	vector<double> energiesWithSmearing;
   	
-  	RegistrationEfficiency::calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);  //energies are in MeV
+  	RegistrationEfficiency getPhasespaceEnergy;
+
+	getPhasespaceEnergy.calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);  //energies are in MeV
 
   	vector<vector<double>> perEvntDepositedEnergies = getDepositedEnergy(perEventPhotonEnergies);
 	vector<double> perEventSmallestDepositedEnergy = getSmallestDepositedEnergy(perEvntDepositedEnergies);

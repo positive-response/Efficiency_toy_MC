@@ -71,7 +71,8 @@ int main() {
   vector<double> perEventWeight{};
   vector<vector<double>> perEventPhotonEnergies{};
   vector<double> perEnergyDetEfficiency{};
-  RegistrationEfficiency::calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);
+  RegistrationEfficiency getPhasespaceEnergy;
+  getPhasespaceEnergy.calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);
   for(auto incomingEnergies : perEventPhotonEnergies)
   {
 	  for(auto incomingEnergy : incomingEnergies)

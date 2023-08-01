@@ -11,20 +11,23 @@ using namespace std;
 class RegistrationEfficiency
 {
     public:
-    RegistrationEfficiency(){};
-    static int calculatePhasespaceEnergy(std::vector<std::vector<double>> * perEventPhotonEnergies, std::vector<double> * perEventWeight)
+    RegistrationEfficiency(const double eMass = 0.000511, const double nParticles = 4, const int iter = 1000000){
+
+    electron_mass = eMass;
+    numberOfDaughterParticles = nParticles;
+    iteration = iter;
+    };
+
+    int calculatePhasespaceEnergy(std::vector<std::vector<double>> * perEventPhotonEnergies, std::vector<double> * perEventWeight)
      {
-        const double electron_mass = 0.000511; // mass of electron or positron in GeV
-	TLorentzVector electron(0.0,0.0,0.0,electron_mass); // four momenta of e-
+       	TLorentzVector electron(0.0,0.0,0.0,electron_mass); // four momenta of e-
 	TLorentzVector proton(0.0,0.0,0.0,electron_mass); //  four momenta of e+
 	TLorentzVector parent_particle = electron + proton; //positronium atom
-	const int numberOfDaughterParticles = 4;
 	double masses[numberOfDaughterParticles] = {0.0};
 	TGenPhaseSpace event;
 	event.SetDecay(parent_particle, numberOfDaughterParticles, masses);
 
-        const int iteration = 1000000;
- 	double weight = 0.0;
+        double weight = 0.0;
  	vector<double>energiesOfGamma{};
  
  	for(int i = 0; i < iteration; i++)
@@ -41,6 +44,11 @@ class RegistrationEfficiency
 	}
 	return 0;
      }
+    private:
+
+    double electron_mass;
+    int numberOfDaughterParticles;
+    int iteration;
 
 
 };
