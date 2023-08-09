@@ -9,10 +9,9 @@ using namespace std;
 double getGeometricalEfficieny(const double , const double, const int);
 double* calculateAcceptance(const double, const double);
 
-int main()
-{
-	const double radiusOfDetector = 42.5;  // in cm 
+int main(){
 	const double half_lengthOfDetector = 25.0;  //in cm
+	const double radiusOfDetector = 42.5; // in cm
 	double * thetaLimits = calculateAcceptance(radiusOfDetector, half_lengthOfDetector);
 	const double mininumTheta = *(thetaLimits + 0);
 	const double maximumTheta = *(thetaLimits + 1);

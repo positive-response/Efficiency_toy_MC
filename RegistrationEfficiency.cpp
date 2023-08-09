@@ -105,7 +105,7 @@ vector<vector<double>> getDepositedEnergy(vector<vector<double>>& perEventPhoton
 
 	       		  if(guessedCross_section <= calculatedCross_section)
 			  {
-				  scatteredGammaEnergy = incoming_energy/(1 + alpha * (1 - cos(TMath::RadToDeg()*theta)));
+				  scatteredGammaEnergy = incoming_energy/(1 + alpha * (1 - cos(theta)));
 				  deposited_energies.push_back(incoming_energy - scatteredGammaEnergy);
 				  break;
 			  }
@@ -154,9 +154,9 @@ int main()
   	vector<double> perEventWeight;
 	vector<double> energiesWithSmearing;
   	
-  	RegistrationEfficiency getPhasespaceEnergy;
+  	RegistrationEfficiency getPhasespaceEnergies;
 
-	getPhasespaceEnergy.calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);  //energies are in MeV
+	getPhasespaceEnergies.calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);  //energies are in MeV
 
 	vector<vector<double>> detEfficiencyCorrectedEvents = getDetectionEfficiencyCorrectedEnergy(perEventPhotonEnergies);
   	vector<vector<double>> perEvntDepositedEnergies = getDepositedEnergy(detEfficiencyCorrectedEvents);
