@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "RegistrationEfficiency.h"
+#include "DetectionEfficiency.cpp"
 
 using namespace std;
 
@@ -157,7 +158,8 @@ int main()
 
 	getPhasespaceEnergy.calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);  //energies are in MeV
 
-  	vector<vector<double>> perEvntDepositedEnergies = getDepositedEnergy(perEventPhotonEnergies);
+	vector<vector<double>> detEfficiencyCorrectedEvents = getDetectionEfficiencyCorrectedEnergy(perEventPhotonEnergies);
+  	vector<vector<double>> perEvntDepositedEnergies = getDepositedEnergy(detEfficiencyCorrectedEvents);
 	vector<double> perEventSmallestDepositedEnergy = getSmallestDepositedEnergy(perEvntDepositedEnergies);
 	
 

@@ -8,10 +8,11 @@
 #include "TFile.h"
 #include <vector>
 #include "RegistrationEfficiency.h"
-
-
+#include <TRandom3.h>
+#include <TRandom.h>
 
 using namespace std;
+vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<double>> );
 
 class DetectionEfficiencyInterpolator{
 public:
@@ -58,40 +59,92 @@ void saveDetectionEfficiencyProbabilites(double detectorThickness = 2, const cha
   }
 }
 
-int main() {
-
-  TH2D* h1 = new TH2D("inEnergyVsDetEff", "Incoming Energy vs detection efficiency", 100, 0, 1, 100, 0, 100);
-  auto pFile = new TFile("EnergyvsEFF.root ", "recreate");
-  const char *outFile = "regEffProbs.txt";
-
-  const double detectorThickness = 2.0; // in cm 
-  saveDetectionEfficiencyProbabilites(detectorThickness, outFile); 
-  DetectionEfficiencyInterpolator detectionEfficiency(outFile);
+int mainn() {
 
   vector<double> perEventWeight{};
   vector<vector<double>> perEventPhotonEnergies{};
-  vector<double> perEnergyDetEfficiency{};
+
   RegistrationEfficiency getPhasespaceEnergy;
   getPhasespaceEnergy.calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);
-  for(auto incomingEnergies : perEventPhotonEnergies)
+
+  vector<vector<double>> eventsAfterDetEfficiency = getDetectionEfficiencyCorrectedEnergy(perEventPhotonEnergies);
+
+  return 0;
+
+}
+
+vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<double>> perEventPhotonEnergies)
+{
+
+  const char *outFile = "regEffProbs.txt";
+  const double detectorThickness = 2.0; // in cm
+  saveDetectionEfficiencyProbabilites(detectorThickness, outFile);
+  DetectionEfficiencyInterpolator detectionEfficiency(outFile);
+ 
+  vector<vector<double>> eventsAfterDetEfficiency{};
+  vector<vector<double>> perEventDetEfficiency{};
+
+  TRandom3* random = new TRandom3();
+  random->SetSeed(0);
+
+  const double detEffLowerLimit = 17.527;
+  const double detEffUpperLimit = 28.3146;
+
+  TH2D* h1 = new TH2D("inEnergyVsDetEff", "Incoming Energy vs detection efficiency", 500, 0, 1, 100, 0, 100);
+  auto pFile = new TFile("EnergyvsEFF.root ", "recreate");
+ 
+  for(const auto& incomingEnergies : perEventPhotonEnergies)
   {
-	  for(auto incomingEnergy : incomingEnergies)
+	  vector<double> energyAfterDetEfficiency{};
+	  vector<double> perEnergyDetEfficiency{};
+	  int count = 0;
+
+	  for(const auto& incomingEnergy : incomingEnergies)
 	  {
-          perEnergyDetEfficiency.push_back(detectionEfficiency.getDetectionEfficiency(incomingEnergy));
-	  
-	  h1->Fill(incomingEnergy, detectionEfficiency.getDetectionEfficiency(incomingEnergy)*100);
-  
-  }
-  }
-//  h1->SetTitle("Smallest energy deposition by gamma in 4gamma decay");
+		  if((incomingEnergy >= 0.105) && (incomingEnergy <= 0.511))
+		  {
+			  count++;
+			  double calcDetEfficiency = detectionEfficiency.getDetectionEfficiency(incomingEnergy) * 100;
+			 // perEnergyDetEfficiency.push_back(calcDetEfficiency);
+
+			  while(true)
+                          {
+                                  double guessedDetEfficiency = random->Uniform(detEffLowerLimit,detEffUpperLimit);
+                                  if(guessedDetEfficiency <= calcDetEfficiency)
+                                  {
+                                          h1->Fill(incomingEnergy, calcDetEfficiency);
+                                          energyAfterDetEfficiency.push_back(incomingEnergy);
+					  perEnergyDetEfficiency.push_back(calcDetEfficiency);
+                                          break;
+                                  }
+			  }
+
+		  }		  
+	  }
+
+	  if(count == 4){
+	  eventsAfterDetEfficiency.push_back(energyAfterDetEfficiency);
+	  perEventDetEfficiency.push_back(perEnergyDetEfficiency);
+	  perEnergyDetEfficiency.clear();
+          energyAfterDetEfficiency.clear();
+          count = 0;
+	  }
+
+	  else
+	  {
+		  perEnergyDetEfficiency.clear();
+                  energyAfterDetEfficiency.clear();
+		  count = 0;
+	  }
+}
+
   h1->GetXaxis()->SetTitle("Gamma_Icoming_Energy(MeV)");
   h1->GetYaxis()->SetTitle("Detection Efficiency #epsilon");
   h1->SetDirectory(gDirectory);
   pFile->Write();
   pFile->Close();
   delete pFile;
-  std::cout << detectionEfficiency.getDetectionEfficiency(0.511) << std::endl;   //energy in MeV
-  
-  return 0;
-}
 
+  return eventsAfterDetEfficiency;
+
+}	

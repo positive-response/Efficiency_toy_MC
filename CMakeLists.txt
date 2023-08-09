@@ -13,12 +13,12 @@ add_executable(GeometricalEfficiency.exe GeometricalEfficiency.cpp)
 target_link_libraries(GeometricalEfficiency.exe PUBLIC ROOT::Physics ROOT::Core ROOT::Tree ROOT::RIO ROOT::Net ROOT::Hist ROOT::RooStats ROOT::Graf ROOT::Graf3d ROOT::ROOTDataFrame)
 target_compile_options(GeometricalEfficiency.exe PRIVATE -Wall -std=c++14)
 
-add_executable(RegistrationEfficiency.exe RegistrationEfficiency.cpp)
+add_executable(RegistrationEfficiency.exe RegistrationEfficiency.cpp )
 target_link_libraries(RegistrationEfficiency.exe PUBLIC ROOT::Physics ROOT::Core ROOT::Tree ROOT::RIO ROOT::Net ROOT::Hist ROOT::RooStats ROOT::Graf ROOT::Graf3d ROOT::ROOTDataFrame)
 target_compile_options(RegistrationEfficiency.exe PRIVATE -Wall -std=c++14)
 
-add_executable(DetectionEfficiency.exe DetectionEfficiency.cpp RegistrationEfficiency.h)
-target_compile_options(DetectionEfficiency.exe PRIVATE -Wall -std=c++14)
-target_link_libraries(DetectionEfficiency.exe PUBLIC ROOT::Physics ROOT::Core ROOT::Tree ROOT::RIO ROOT::Net ROOT::Hist ROOT::RooStats ROOT::Graf ROOT::Graf3d ROOT::ROOTDataFrame)
+##add_executable(DetectionEfficiency.exe DetectionEfficiency.cpp RegistrationEfficiency.h)
+##target_compile_options(DetectionEfficiency.exe PRIVATE -Wall -std=c++14)
+##target_link_libraries(DetectionEfficiency.exe PUBLIC ROOT::Physics ROOT::Core ROOT::Tree ROOT::RIO ROOT::Net ROOT::Hist ROOT::RooStats ROOT::Graf ROOT::Graf3d ROOT::ROOTDataFrame)
 
 
