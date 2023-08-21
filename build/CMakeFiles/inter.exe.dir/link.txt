@@ -1,0 +1,1 @@
+/usr/bin/c++    -std=c++11 -pipe -fsigned-char -pthread  -rdynamic CMakeFiles/inter.exe.dir/inter.cpp.o  -o inter.exe   -L/home/pooja/root/root-6.22.06/build_root/lib 

@@ -98,9 +98,12 @@ vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<doubl
 	  vector<double> energyAfterDetEfficiency{};
 	  vector<double> perEnergyDetEfficiency{};
 	  int count = 0;
+	  double weight = 0.0;
+
 
 	  for(const auto& incomingEnergy : incomingEnergies)
 	  {
+		  weight = 2;
 		  if((incomingEnergy >= 0.105) && (incomingEnergy <= 0.511))
 		  {
 			  count++;
@@ -120,8 +123,8 @@ vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<doubl
 			  }
 
 		  }		  
+	  
 	  }
-
 	  if(count == 4){
 	  eventsAfterDetEfficiency.push_back(energyAfterDetEfficiency);
 	  perEventDetEfficiency.push_back(perEnergyDetEfficiency);
@@ -136,7 +139,8 @@ vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<doubl
                   energyAfterDetEfficiency.clear();
 		  count = 0;
 	  }
-}
+	  
+  }
 
   h1->GetXaxis()->SetTitle("Gamma_Icoming_Energy(MeV)");
   h1->GetYaxis()->SetTitle("Detection Efficiency #epsilon");

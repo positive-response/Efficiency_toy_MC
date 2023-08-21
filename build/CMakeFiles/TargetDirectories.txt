@@ -1,0 +1,3 @@
+/home/pooja/toy_monte_carlo/Efficiency_toy_MC/build/CMakeFiles/rebuild_cache.dir
+/home/pooja/toy_monte_carlo/Efficiency_toy_MC/build/CMakeFiles/edit_cache.dir
+/home/pooja/toy_monte_carlo/Efficiency_toy_MC/build/CMakeFiles/RegistrationEfficiency.exe.dir

@@ -157,13 +157,13 @@ int main()
   	RegistrationEfficiency getPhasespaceEnergies;
 
 	getPhasespaceEnergies.calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);  //energies are in MeV
-
 	vector<vector<double>> detEfficiencyCorrectedEvents = getDetectionEfficiencyCorrectedEnergy(perEventPhotonEnergies);
   	vector<vector<double>> perEvntDepositedEnergies = getDepositedEnergy(detEfficiencyCorrectedEvents);
 	vector<double> perEventSmallestDepositedEnergy = getSmallestDepositedEnergy(perEvntDepositedEnergies);
-	
 
+	double detectionEfficiency = static_cast<double>(detEfficiencyCorrectedEvents.size())/perEventPhotonEnergies.size();
 	const double smear_const = 0.044;
+	const double registrationThreshold = 30.0;
 	for(int i = 0; i < static_cast<int>(perEventSmallestDepositedEnergy.size()); i++)
 	{
 		double energy = perEventSmallestDepositedEnergy[i];
@@ -174,13 +174,15 @@ int main()
 	//	h3->Fill(E, perEventWeight[i]);
 	//	h4->Fill(E_smear, perEventWeight[i]);
 	}
-	double registration_eff = getRegistrationEfficiency(&energiesWithSmearing, "smeared.root", 30.0);
+	double registration_eff = getRegistrationEfficiency(&energiesWithSmearing, "smeared.root", registrationThreshold);
    //   h4->Draw();
    //   h3->SetTitle("Smallest energy deposition by gamma in 4gamma decay");
    //   h3->GetXaxis()->SetTitle("Energy_dep(keV)");
    //   h3->GetYaxis()->SetTitle("Counts");
         std::cout<<"registration_efficiency: "<< registration_eff<<std::endl;
-        return 0;
+	std::cout<<"Fraction of events withing the allowed probability range: " << detectionEfficiency<<std::endl;
+	std::cout<<"Combined effeciency(Detection & Registration) "<<registration_eff*detectionEfficiency<<std::endl;
+	return 0;
 
    }
 /********************cross-section calculation**********************************/
@@ -199,38 +201,4 @@ double calculateCross_Section(double theta, double energy)
   double differentialCross_section =  dSigma_by_dOmega * dOmega_by_dTheta * dTheta_by_dE;
   return differentialCross_section;
 }
-/*****************************Phasespace calculation******************************************/
-/*
 
-int RegistrationEfficiency::calculatePhasespaceEnergy(std::vector<std::vector<double>> * perEventPhotonEnergies, std::vector<double> * perEventWeight)
-{
- const double electron_mass = 0.000511; // mass of electron or positron in GeV
- TLorentzVector electron(0.0,0.0,0.0,electron_mass); // four momenta of e-
- TLorentzVector proton(0.0,0.0,0.0,electron_mass); //  four momenta of e+
- TLorentzVector parent_particle = electron + proton; //positronium atom
-
- const int numberOfDaughterParticles = 4;
- double masses[numberOfDaughterParticles] = {0.0};
-
- TGenPhaseSpace event;
- event.SetDecay(parent_particle, numberOfDaughterParticles, masses);
-
- const int iteration = 1000000;
- double weight = 0.0;
- vector<double>energiesOfGamma{};
- 
- for(int i = 0; i < iteration; i++)
-   {
-     weight = event.Generate();
-     perEventWeight->push_back(weight);
-
-     for(int j = 0; j < numberOfDaughterParticles; j++)
-       {
-         TLorentzVector *gamma = event.GetDecay(j);
-	 energiesOfGamma.push_back(gamma->E() * 1000 * 1000); //From MeV to keV
-       }
-perEventPhotonEnergies->push_back(energiesOfGamma); 
-energiesOfGamma.clear();
-   }
-   return 0;
-}*/
