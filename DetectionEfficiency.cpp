@@ -14,7 +14,7 @@
 using namespace std;
 vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<double>> );
 
-int mainn() {
+int DetectionEfficiency() {
 
   vector<double> perEventWeight{};
   vector<vector<double>> perEventPhotonEnergies{};

@@ -3,6 +3,7 @@
 #include "TLorentzVector.h"
 #include "TH1D.h"
 #include <iostream>
+#include "TH3D.h"
 
 using namespace std;
 
@@ -25,6 +26,7 @@ double getGeometricalEfficieny(const double theta_min = 1.0472, const double the
 {
 TH3D* h1 = new TH3D("h1", "Position of gamma before geometrical cut", 100, -1, 1, 100,-1,1, 100, -1, 1);
 TH3D* h2 = new TH3D("h2", "position of gamma after geometrical cut", 100, -1, 1, 100, -1, 1, 100,-1,1);
+TH1D* h3 = new TH1D("h3", "Largest angle distribution", 200, 0, 3.50);
 
 const  double electron_mass = 0.000511; // in GeV                                                                                                 
 TLorentzVector electron(0.0,0.0,0.0,electron_mass);
@@ -47,29 +49,40 @@ for(int i = 0; i < iteration; i++)
 	   n_min = 0;
 	   total++;
 	   weight = event.Generate();
-
+	   double small_theta = gamma_theta[0];
 	   for(int j = 0; j< numberOfDaughterParticles; j++)
 	   {
-		 //  h1->Fill(cos(gamma->Theta())*sin(gamma->Phi()), sin(gamma->Theta())*sin(gamma->Phi()),cos(gamma->Phi()), weight)
 		   TLorentzVector *gamma = event.GetDecay(j);
                    gamma_theta[j] = gamma->Theta();
 		   h1->Fill(cos(gamma->Theta())*sin(gamma->Phi()), sin(gamma->Theta())*sin(gamma->Phi()),cos(gamma->Phi()), weight);
                      //  h1->Fill(gamma->Z(), gamma->Y(), weight);
+		
 		  if ((gamma_theta[j] > theta_min) & (gamma_theta[j] < theta_max))
 		  {	  n_min++;
 	
 		  h2->Fill(cos(gamma->Theta())*sin(gamma->Phi()), sin(gamma->Theta())*sin(gamma->Phi()),cos(gamma->Phi()), weight);
 		  }
 	   }
+
+	   small_theta = gamma_theta[0];
+	     for (int x = 1; x < numberOfDaughterParticles; x++)
+		         {
+				 if (gamma_theta[x] > small_theta)
+				 {
+					 small_theta = gamma_theta[x];
+				 }
+			 }
+	     h3->Fill(small_theta, weight);
+
 	     if (n_min >= minimumNumberOfGamma)
 		     accepted++;
 	     n_min = 0;
   }
-//h1->Draw();
-h2->Draw("SAME");
-h2->GetXaxis()->SetTitle("X Coordinates");
-h2->GetYaxis()->SetTitle("Y Coordinates");
-h2->GetZaxis()->SetTitle("Z Coordinates");
+h3->Draw();
+
+h3->GetXaxis()->SetTitle("Angles (#theta) in radians");
+h3->GetYaxis()->SetTitle("counts");
+std::cout<<"Geometrical Efficiency: " << static_cast<double>(accepted)/total<< std::endl;
 return static_cast<double>(accepted)/total;
 }
 /*****************************************************************************************/

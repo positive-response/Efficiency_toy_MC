@@ -24,7 +24,7 @@ double getRegistrationEfficiency(vector<double>*, const char*, const double ); /
 vector<vector<double>> getDepositedEnergy(vector<vector<double>>& );
 vector<double> getSmallestDepositedEnergy(vector<vector<double>>& );
 
-int main()
+double registrationEfficiency()
 {
 	TRandom3 * random = new TRandom3();
 	random->SetSeed(0);
@@ -61,10 +61,10 @@ int main()
    //   h3->SetTitle("Smallest energy deposition by gamma in 4gamma decay");
    //   h3->GetXaxis()->SetTitle("Energy_dep(keV)");
    //   h3->GetYaxis()->SetTitle("Counts");
-        std::cout<<"registration_efficiency(after Detection Efficiency corrected): "<< registration_eff<<std::endl;
-	std::cout<<"Fraction of events withing the allowed probability range: " << detectionEfficiency<<std::endl;
+        std::cout<<"Registration_efficiency(after Detection Efficiency corrected): "<< registration_eff<<std::endl;
+	std::cout<<"Fraction of events withing the allowed probability range(Detection Efficiency): " << detectionEfficiency<<std::endl;
 	
-	return 0;
+	return registration_eff;
 
    }
 /********************Calculation of efficiency****************************/
