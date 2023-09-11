@@ -14,6 +14,21 @@
 using namespace std;
 vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<double>> );
 
+int mainn() {
+
+  vector<double> perEventWeight{};
+  vector<vector<double>> perEventPhotonEnergies{};
+
+  RegistrationEfficiency getPhasespaceEnergy;
+  getPhasespaceEnergy.calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);
+
+  vector<vector<double>> eventsAfterDetEfficiency = getDetectionEfficiencyCorrectedEnergy(perEventPhotonEnergies);
+
+  return 0;
+
+}
+
+
 class DetectionEfficiencyInterpolator{
 public:
 	DetectionEfficiencyInterpolator(const char* prob_file = "regEffProbs.txt") {
@@ -27,6 +42,7 @@ private:
 	TGraph *Graph = nullptr;
 	TSpline5 *Spline_interpolator = nullptr;
 };
+
 // Calculates probabilities of gamma interaction in plastic scintillator based
 // on gamma energy and saves it to a text file
 void saveDetectionEfficiencyProbabilites(double detectorThickness = 2, const char *outFile = "regEffProbs.txt") {
@@ -59,22 +75,12 @@ void saveDetectionEfficiencyProbabilites(double detectorThickness = 2, const cha
   }
 }
 
-int mainn() {
-
-  vector<double> perEventWeight{};
-  vector<vector<double>> perEventPhotonEnergies{};
-
-  RegistrationEfficiency getPhasespaceEnergy;
-  getPhasespaceEnergy.calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);
-
-  vector<vector<double>> eventsAfterDetEfficiency = getDetectionEfficiencyCorrectedEnergy(perEventPhotonEnergies);
-
-  return 0;
-
-}
 
 vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<double>> perEventPhotonEnergies)
 {
+
+  TRandom3* random = new TRandom3();
+  random->SetSeed(0);
 
   const char *outFile = "regEffProbs.txt";
   const double detectorThickness = 2.0; // in cm
@@ -84,10 +90,7 @@ vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<doubl
   vector<vector<double>> eventsAfterDetEfficiency{};
   vector<vector<double>> perEventDetEfficiency{};
 
-  TRandom3* random = new TRandom3();
-  random->SetSeed(0);
-
-  const double detEffLowerLimit = 17.527;
+  const double detEffLowerLimit = 17.527;  
   const double detEffUpperLimit = 28.3146;
 
   TH2D* h1 = new TH2D("inEnergyVsDetEff", "Incoming Energy vs detection efficiency", 500, 0, 1, 100, 0, 100);
@@ -99,7 +102,6 @@ vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<doubl
 	  vector<double> perEnergyDetEfficiency{};
 	  int count = 0;
 	  double weight = 0.0;
-
 
 	  for(const auto& incomingEnergy : incomingEnergies)
 	  {
