@@ -29,8 +29,8 @@ double registrationEfficiency()
 	TRandom3 * random = new TRandom3();
 	random->SetSeed(0);
 
-//    	TH1D* h3 = new TH1D("energiesWithSmearing", "Energy", 500, 0, 550);
-//  	TH1D* h4 = new TH1D("energiesWithSmearing_s", "EnergyS", 700, 0, 500);
+    	TH1D* h3 = new TH1D("energiesWithSmearing", "Energy", 500, 0, 550);
+  	TH1D* h4 = new TH1D("energiesWithSmearing_s", "EnergyS", 700, 0, 500);
 
   	vector<vector<double>> perEventPhotonEnergies;
   	vector<double> perEventWeight;
@@ -54,16 +54,18 @@ double registrationEfficiency()
 
 		energiesWithSmearing.push_back(smearedEnergy);
 	//	h3->Fill(E, perEventWeight[i]);
-	//	h4->Fill(E_smear, perEventWeight[i]);
+		h4->Fill(smearedEnergy, perEventWeight[i]);
 	}
 	double registration_eff = getRegistrationEfficiency(&energiesWithSmearing, "smeared.root", registrationThreshold);
-   //   h4->Draw();
-   //   h3->SetTitle("Smallest energy deposition by gamma in 4gamma decay");
-   //   h3->GetXaxis()->SetTitle("Energy_dep(keV)");
-   //   h3->GetYaxis()->SetTitle("Counts");
+      
+	h3->Draw();
+	h4->Draw("same");
+
+      h3->SetTitle("Smallest energy deposition by gamma in 4gamma decay(Detection Efficiency included)");
+      h3->GetXaxis()->SetTitle("Energy_dep(keV)");
+      h3->GetYaxis()->SetTitle("Counts");
         std::cout<<"Registration_efficiency(after Detection Efficiency corrected): "<< registration_eff<<std::endl;
-	std::cout<<"Fraction of events withing the allowed probability range(Detection Efficiency): " << detectionEfficiency<<std::endl;
-	
+	std::cout<<"Fraction of events withing the allowed probability range(Detection Efficiency): " << detectionEfficiency<<std::endl;	
 	return registration_eff;
 
    }

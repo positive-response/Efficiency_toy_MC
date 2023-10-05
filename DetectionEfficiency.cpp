@@ -90,8 +90,8 @@ vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<doubl
   vector<vector<double>> eventsAfterDetEfficiency{};
   vector<vector<double>> perEventDetEfficiency{};
 
-  const double detEffLowerLimit = 17.527;  
-  const double detEffUpperLimit = 28.3146;
+  const double detEffLowerLimit = 17.527; //efficiency corresponding to 105 kev 
+  const double detEffUpperLimit = 28.3146; //efficiency corresponding to 511 kev
 
   TH2D* h1 = new TH2D("inEnergyVsDetEff", "Incoming Energy vs detection efficiency", 500, 0, 1, 100, 0, 100);
   auto pFile = new TFile("EnergyvsEFF.root ", "recreate");
@@ -101,11 +101,9 @@ vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<doubl
 	  vector<double> energyAfterDetEfficiency{};
 	  vector<double> perEnergyDetEfficiency{};
 	  int count = 0;
-	  double weight = 0.0;
-
+	  
 	  for(const auto& incomingEnergy : incomingEnergies)
 	  {
-		  weight = 2;
 		  if((incomingEnergy >= 0.105) && (incomingEnergy <= 0.511))
 		  {
 			  count++;
@@ -127,7 +125,7 @@ vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<doubl
 		  }		  
 	  
 	  }
-	  if(count == 4){
+	  if(count == 5){
 	  eventsAfterDetEfficiency.push_back(energyAfterDetEfficiency);
 	  perEventDetEfficiency.push_back(perEnergyDetEfficiency);
 	  perEnergyDetEfficiency.clear();

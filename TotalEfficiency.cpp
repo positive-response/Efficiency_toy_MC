@@ -1,15 +1,13 @@
-#include "inter.cpp"
-#include "Klein_4.cpp"
-#include "phasespace4.cpp"
+#include "GeometricalEfficiency.cpp"
+#include "RegistrationEfficiency.cpp"
 
 int main()
 {
-double geometrical_eff = phasespace4();
-double registration_eff = Klein_4();
-double detection_eff = inter1();
+double geometrical_eff = getGeometricalEfficieny();
+double registration_eff = registrationEfficiency();
 
-double total_eff = geometrical_eff * registration_eff * detection_eff;
+double total_eff = geometrical_eff * registration_eff;
+std::cout<<"Total Efficiency:" << total_eff<<std::endl;
 
-//return total_eff;
 return 1;
 }
