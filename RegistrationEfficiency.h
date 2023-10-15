@@ -11,7 +11,7 @@ using namespace std;
 class RegistrationEfficiency
 {
     public:
-    RegistrationEfficiency(const double eMass = 0.000511, const double nParticles = 4, const int iter = 1000000){
+    RegistrationEfficiency(const double eMass = 0.000511, const double nParticles = 5, const int iter = 1000000){
 
     electron_mass = eMass;
     numberOfDaughterParticles = nParticles;
@@ -23,9 +23,10 @@ class RegistrationEfficiency
        	TLorentzVector electron(0.0,0.0,0.0,electron_mass); // four momenta of e-
 	TLorentzVector proton(0.0,0.0,0.0,electron_mass); //  four momenta of e+
 	TLorentzVector parent_particle = electron + proton; //positronium atom
-	double masses[numberOfDaughterParticles] = {0.0};
+
+        std::vector<double> masses(numberOfDaughterParticles, 0.0);
 	TGenPhaseSpace event;
-	event.SetDecay(parent_particle, numberOfDaughterParticles, masses);
+	event.SetDecay(parent_particle, numberOfDaughterParticles, masses.data());
 
         double weight = 0.0;
  	vector<double>energiesOfGamma{};

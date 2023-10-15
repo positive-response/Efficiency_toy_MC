@@ -12,17 +12,18 @@
 #include <TRandom.h>
 
 using namespace std;
-vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<double>> );
+vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<double>> , const int);
 
 int DetectionEfficiency() {
 
   vector<double> perEventWeight{};
   vector<vector<double>> perEventPhotonEnergies{};
 
-  RegistrationEfficiency getPhasespaceEnergy;
-  getPhasespaceEnergy.calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);
+//  const int npar = 5;
+ // RegistrationEfficiency getPhasespaceEnergy(0.000511, npar ,1000000);
+ // getPhasespaceEnergy.calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);
 
-  vector<vector<double>> eventsAfterDetEfficiency = getDetectionEfficiencyCorrectedEnergy(perEventPhotonEnergies);
+ // vector<vector<double>> eventsAfterDetEfficiency = getDetectionEfficiencyCorrectedEnergy(perEventPhotonEnergies, npar);
 
   return 0;
 
@@ -76,12 +77,13 @@ void saveDetectionEfficiencyProbabilites(double detectorThickness = 2, const cha
 }
 
 
-vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<double>> perEventPhotonEnergies)
+vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<double>> perEventPhotonEnergies, const int npar)
 {
 
   TRandom3* random = new TRandom3();
   random->SetSeed(0);
 
+  const int nparticles = npar;
   const char *outFile = "regEffProbs.txt";
   const double detectorThickness = 2.0; // in cm
   saveDetectionEfficiencyProbabilites(detectorThickness, outFile);
@@ -125,7 +127,7 @@ vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<doubl
 		  }		  
 	  
 	  }
-	  if(count == 5){
+	  if(count == nparticles){
 	  eventsAfterDetEfficiency.push_back(energyAfterDetEfficiency);
 	  perEventDetEfficiency.push_back(perEnergyDetEfficiency);
 	  perEnergyDetEfficiency.clear();

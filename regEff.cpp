@@ -24,49 +24,74 @@ double getRegistrationEfficiency(vector<double>*, const char*, const double ); /
 vector<vector<double>> getDepositedEnergy(vector<vector<double>>& );
 vector<double> getSmallestDepositedEnergy(vector<vector<double>>& );
 
-double registrationEfficiency()
+TH1D* functionToGetSmallestEnergy(const int no)
 {
 	TRandom3 * random = new TRandom3();
-	random->SetSeed(0);
+        random->SetSeed(0);
+	TH1D* h3 = new TH1D("smallestEnergiesWithSmearingfor4gamma", "EnergyS", 200, 0, 200);
 
-    	TH1D* h3 = new TH1D("energiesWithSmearing", "Energy", 500, 0, 550);
-  	TH1D* h4 = new TH1D("energiesWithSmearing_s", "EnergyS", 700, 0, 500);
-
-  	vector<vector<double>> perEventPhotonEnergies;
-  	vector<double> perEventWeight;
-	vector<double> energiesWithSmearing;
-  	
-  	RegistrationEfficiency getPhasespaceEnergies;
+	vector<vector<double>> perEventPhotonEnergies;
+        vector<double> perEventWeight;
+        vector<double> energiesWithSmearing;
+	const int npar = no;
+	RegistrationEfficiency getPhasespaceEnergies(0.000511, npar ,1000000);
 
 	getPhasespaceEnergies.calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);  //energies are in MeV
-	vector<vector<double>> detEfficiencyCorrectedEvents = getDetectionEfficiencyCorrectedEnergy(perEventPhotonEnergies);
+	vector<vector<double>> detEfficiencyCorrectedEvents = getDetectionEfficiencyCorrectedEnergy(perEventPhotonEnergies, npar);
   	vector<vector<double>> perEvntDepositedEnergies = getDepositedEnergy(detEfficiencyCorrectedEvents);
 	vector<double> perEventSmallestDepositedEnergy = getSmallestDepositedEnergy(perEvntDepositedEnergies);
 
-	double detectionEfficiency = static_cast<double>(detEfficiencyCorrectedEvents.size())/perEventPhotonEnergies.size();
-	const double smear_const = 0.044;
-	const double registrationThreshold = 30.0;
-	for(int i = 0; i < static_cast<int>(perEventSmallestDepositedEnergy.size()); i++)
-	{
-		double energy = perEventSmallestDepositedEnergy[i];
-		double sigma = (energy * smear_const)/(sqrt(energy/1000));
-		double smearedEnergy = energy + random->Gaus(0, sigma);
+        const double smear_const = 0.044;
+        const double registrationThreshold = 30.0;
+        for(int i = 0; i < static_cast<int>(perEventSmallestDepositedEnergy.size()); i++)
+        {
+                double energy = perEventSmallestDepositedEnergy[i];
+                double sigma = (energy * smear_const)/(sqrt(energy/1000));
+                double smearedEnergy = energy + random->Gaus(0, sigma);
 
-		energiesWithSmearing.push_back(smearedEnergy);
-	//	h3->Fill(E, perEventWeight[i]);
-		h4->Fill(smearedEnergy, perEventWeight[i]);
-	}
-	double registration_eff = getRegistrationEfficiency(&energiesWithSmearing, "smeared.root", registrationThreshold);
-      
-	h3->Draw();
-	h4->Draw("same");
+                energiesWithSmearing.push_back(smearedEnergy);
+                h3->Fill(smearedEnergy, perEventWeight[i]);
+        }
+        double registration_eff = getRegistrationEfficiency(&energiesWithSmearing, "smeared.root", registrationThreshold);
+//      double detectionEfficiency = static_cast<double>(detEfficiencyCorrectedEvents.size())/perEventPhotonEnergies.size();
+       h3->SetTitle("Smallest energy deposition by gamma in o-Ps decay(Detection Efficiency included)");
+	h3->GetXaxis()->SetTitle("Deposited Energy [keV]");
+        h3->GetYaxis()->SetTitle("Counts");
+	return h3;
+}
 
-    //  h3->SetTitle("Smallest energy deposition by gamma in 4gamma decay(Detection Efficiency included)");
-      h3->GetXaxis()->SetTitle("Deposited Energy [keV]");
-      h3->GetYaxis()->SetTitle("Counts");
-        std::cout<<"Registration_efficiency(after Detection Efficiency corrected): "<< registration_eff<<std::endl;
-	std::cout<<"Fraction of events withing the allowed probability range(Detection Efficiency): " << detectionEfficiency<<std::endl;	
-	return registration_eff;
+double regEff()
+{
+
+        TH1D* gamma4 = functionToGetSmallestEnergy(4);
+	TH1D* gamma5 = functionToGetSmallestEnergy(5);
+
+        TCanvas* c2 = new TCanvas("c2", "new canvas");
+
+        TH1D* h1C = (TH1D*)gamma4->Clone("h1C");
+        gamma4->Scale(1000 / h1C->Integral());
+        gamma4->Draw();
+
+	gamma5->Draw("SAME");
+	gamma4->SetLineColor(kRed);
+	gamma4->SetLineWidth(2);
+
+	gamma5->SetLineColor(kBlue);
+	gamma5->SetLineWidth(2);
+
+
+	auto legend = new TLegend(0.1, 0.3, 0.3, 0.5);
+	legend->AddEntry(gamma4, "Smallest deposited energy for 4 #gamma");
+	legend->AddEntry(gamma5, "Smallest deposited energy for 5 #gamma");
+	legend->Draw();
+        return 0.0;
+
+//     h3->SetTitle("Smallest energy deposition by gamma in 4gamma decay(Detection Efficiency included)");
+//      h4->GetXaxis()->SetTitle("Deposited Energy [keV]");
+//      h4->GetYaxis()->SetTitle("Counts");
+//        std::cout<<"Registration_efficiency(after Detection Efficiency corrected): "<< registration_eff<<std::endl;
+//      std::cout<<"Fraction of events within the allowed probability range(Detection Efficiency): " << detectionEfficiency<<std::endl;	
+//      return registration_eff;
 
    }
 /********************Calculation of efficiency****************************/
