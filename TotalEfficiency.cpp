@@ -1,13 +1,17 @@
 #include "GeometricalEfficiency.cpp"
 #include "RegistrationEfficiency.cpp"
 
-int main()
+int main(int argc, char* argv[])
 {
-double geometrical_eff = getGeometricalEfficieny();
-double registration_eff = registrationEfficiency();
 
-double total_eff = geometrical_eff * registration_eff;
-std::cout<<"Total Efficiency:" << total_eff<<std::endl;
-
-return 1;
+	const int decayMode = atoi(argv[1]);
+        const int nRequiredDecayParticles = atoi(argv[2]);
+	std::cout<<"***********************stage 1 started: ***********************"<<std::endl;
+	double geometrical_eff = GeometricalEfficiency(decayMode, nRequiredDecayParticles);
+	std::cout<<"********************stage 2 started:*********************** "<<endl;
+	double registration_eff = RegistrationEfficiency(decayMode, decayMode);
+	double total_eff = geometrical_eff * registration_eff;
+	std::cout<<"Total Efficiency:" << total_eff<<std::endl;
+	std::cout<<"**********************calculation finished********************************"<<std::endl;
+	return 1;
 }
