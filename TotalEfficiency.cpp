@@ -3,7 +3,6 @@
 
 int main(int argc, char* argv[])
 {
-
 	const int decayMode = atoi(argv[1]);
         const int nRequiredDecayParticles = atoi(argv[2]);
 	std::cout<<"***********************stage 1 started: ***********************"<<std::endl;
