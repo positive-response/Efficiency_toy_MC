@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
 	std::cout<<"********************stage 2 started:*********************** "<<endl;
 	double registration_eff = RegistrationEfficiency(decayMode, decayMode);
 	double total_eff = geometrical_eff * registration_eff;
-	std::cout<<"Total Efficiency:" << total_eff<<std::endl;
+	std::cout<<"Total Efficiency(in %):" << total_eff*100<<std::endl;
 	std::cout<<"**********************calculation finished********************************"<<std::endl;
 	return 1;
 }

@@ -32,6 +32,7 @@ double RegistrationEfficiency(int nDaughter = 5, int nDetected = 5)
   	TH1D* h4 = new TH1D("energiesWithSmearing_s", "EnergyS", 700, 0, 500);
 
   	vector<vector<double>> perEventPhotonEnergies;
+	vector<double> perEventDetWeight;
   	vector<double> perEventWeight;
 	vector<double> energiesWithSmearing;
   
@@ -41,12 +42,14 @@ double RegistrationEfficiency(int nDaughter = 5, int nDetected = 5)
 	vector<vector<double>> detEfficiencyCorrectedEvents = getDetectionEfficiencyCorrectedEnergy(perEventPhotonEnergies,nDetected); 
   	vector<vector<double>> perEvntDepositedEnergies = getDepositedEnergy(detEfficiencyCorrectedEvents);
 	vector<double> perEventSmallestDepositedEnergy = getSmallestDepositedEnergy(perEvntDepositedEnergies); 
-	std::cout<< perEvntDepositedEnergies.size()<<"size"<<std::endl;
+	
+//	std::cout<< perEvntDepositedEnergies.size()<<"size"<<std::endl;
+
 	double detectionEfficiency = static_cast<double>(detEfficiencyCorrectedEvents.size())/perEventPhotonEnergies.size();
 
 	const double smear_const = 0.044;
 	const double registrationThreshold1 = 30.0;
-	const double registrationThreshold2 = 55.0;
+	const double registrationThreshold2 = 50.0;
 	for(int i = 0; i < static_cast<int>(perEventSmallestDepositedEnergy.size()); i++)
 	{
 		double energy = perEventSmallestDepositedEnergy[i];
@@ -57,7 +60,8 @@ double RegistrationEfficiency(int nDaughter = 5, int nDetected = 5)
 		h4->Fill(smearedEnergy, perEventWeight[i]);
 	}
 	double registration_eff = getRegistrationEfficiency(&energiesWithSmearing, "smeared.root", registrationThreshold1, registrationThreshold2);
-      
+    
+
 	//h3->Draw();
 	//h4->Draw("same");
 
@@ -66,7 +70,7 @@ double RegistrationEfficiency(int nDaughter = 5, int nDetected = 5)
        // h3->GetYaxis()->SetTitle("Counts");
          std::cout<<"Fraction of events withing the allowed probability range(Detection Efficiency): " << detectionEfficiency<<std::endl;
         std::cout<<"Registration_efficiency(after Detection Efficiency corrected): "<< registration_eff<<std::endl;	
-	return registration_eff;
+	return registration_eff*detectionEfficiency;
 
    }
 /********************Calculation of efficiency****************************/
@@ -114,6 +118,8 @@ double getRegistrationEfficiency(vector<double>* energiesWithSmearing, const cha
 		  count++;
   }
 
+//  cout<<count<<" :events count after reg "<<endl;
+//  cout<<sizeOfEnergyVector<<" :events count after smearing "<<endl;
   ratio = static_cast<double>(count)/sizeOfEnergyVector;
   count = 0;
   return ratio; 

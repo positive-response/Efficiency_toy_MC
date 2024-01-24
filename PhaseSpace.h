@@ -77,6 +77,8 @@ class PhaseSpace
 			    gamma_phi.clear();
 		    }
 	    }
+
+		
 };
 
 #endif

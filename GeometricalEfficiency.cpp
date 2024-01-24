@@ -5,6 +5,7 @@
 #include <iostream>
 #include "TH3D.h"
 #include "PhaseSpace.h"
+#include "TFile.h"
 
 using namespace std;
 
@@ -28,6 +29,7 @@ double getGeometricalEfficiency(const double theta_min = 1.0472, const double th
 
 //TH3D* h1 = new TH3D("h1", "Position of gamma before geometrical cut", 100, -1, 1, 100,-1,1, 100, -1, 1);
 //TH3D* h2 = new TH3D("h2", "position of gamma after geometrical cut", 100, -1, 1, 100, -1, 1, 100,-1,1);
+//auto h2 = new TH1D("h2", "sum of hits", 720, 0, 720);
 
 	std::vector<vector<double>> gamma_theta_per_event;
 	std::vector<vector<double>> gamma_phi_per_event;
@@ -59,13 +61,15 @@ double getGeometricalEfficiency(const double theta_min = 1.0472, const double th
 		{
 			gamma_theta = gamma_theta_per_event[i][j];
 		        gamma_phi = gamma_phi_per_event[i][j];
-
+			double sum = 0.0;
 			if ((gamma_theta > theta_min) && (gamma_theta < theta_max) && (gamma_phi > phi_min) && (gamma_phi < phi_max))
 			{	 
+				sum += abs(gamma_theta);
 			       	n_min++;
 //				h2->Fill(cos(gamma_theta[j])*sin(gamma_phi[j]), sin(gamma_theta[j])*sin(gamma_phi[j]),cos(gamma_phi[j]));
 			}
 			else r++;
+//			h2->Fill(TMath::RadToDeg()*sum);
 		}
 
 		gamma_theta = 0.0;
@@ -75,6 +79,10 @@ double getGeometricalEfficiency(const double theta_min = 1.0472, const double th
 		n_min = 0;
 	}
 
+//auto geo = new TFile("geo.root", "RECREATE");
+//h2->SetDirectory(gDirectory);
+//geo->Write();
+//geo->Close();
 //h2->Draw();
 //h2->GetXaxis()->SetTitle("Angles (#theta) in radians");
 //h2->GetYaxis()->SetTitle("counts");
@@ -89,4 +97,5 @@ double* calculateAcceptance(const double radius = 42.5, const double half_length
 	const double maximumAcceptanceTheta = 2 * minimumAcceptanceTheta; 
 	static double acceptanceLimits[2] = {minimumAcceptanceTheta, maximumAcceptanceTheta};
 	return acceptanceLimits;
+
 }
