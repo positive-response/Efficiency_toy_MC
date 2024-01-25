@@ -43,8 +43,7 @@ double RegistrationEfficiency(int nDaughter = 5, int nDetected = 5)
   	vector<vector<double>> perEvntDepositedEnergies = getDepositedEnergy(detEfficiencyCorrectedEvents);
 	vector<double> perEventSmallestDepositedEnergy = getSmallestDepositedEnergy(perEvntDepositedEnergies); 
 	
-//	std::cout<< perEvntDepositedEnergies.size()<<"size"<<std::endl;
-
+	
 	double detectionEfficiency = static_cast<double>(detEfficiencyCorrectedEvents.size())/perEventPhotonEnergies.size();
 
 	const double smear_const = 0.044;
@@ -70,6 +69,7 @@ double RegistrationEfficiency(int nDaughter = 5, int nDetected = 5)
        // h3->GetYaxis()->SetTitle("Counts");
          std::cout<<"Fraction of events withing the allowed probability range(Detection Efficiency): " << detectionEfficiency<<std::endl;
         std::cout<<"Registration_efficiency(after Detection Efficiency corrected): "<< registration_eff<<std::endl;	
+
 	return registration_eff*detectionEfficiency;
 
    }
@@ -118,8 +118,8 @@ double getRegistrationEfficiency(vector<double>* energiesWithSmearing, const cha
 		  count++;
   }
 
-//  cout<<count<<" :events count after reg "<<endl;
-//  cout<<sizeOfEnergyVector<<" :events count after smearing "<<endl;
+cout<<count<<" :events count after registration cut "<<endl;
+  cout<<sizeOfEnergyVector<<" :events count before registration cut "<<endl;
   ratio = static_cast<double>(count)/sizeOfEnergyVector;
   count = 0;
   return ratio; 
