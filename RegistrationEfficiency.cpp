@@ -15,7 +15,7 @@
 
 #include "PhaseSpace.h"
 #include "DetectionEfficiency.cpp"
-
+#include "GeometricalEfficiency.cpp"
 using namespace std;
 
 double calculateCross_Section(double , double );      // calculation of cross section
@@ -27,8 +27,6 @@ double RegistrationEfficiency(int nDaughter = 5, int nDetected = 5)
 {
 	TRandom3 * random = new TRandom3();
 	random->SetSeed(0);
-
-//    	TH1D* h3 = new TH1D("energiesWithSmearing", "Energy", 500, 0, 550);
   	TH1D* h4 = new TH1D("energiesWithSmearing_s", "EnergyS", 700, 0, 500);
 
   	vector<vector<double>> perEventPhotonEnergies;
@@ -36,13 +34,10 @@ double RegistrationEfficiency(int nDaughter = 5, int nDetected = 5)
   	vector<double> perEventWeight;
 	vector<double> energiesWithSmearing;
   
-  	PhaseSpace getPhasespaceEnergies;
-	getPhasespaceEnergies.numberOfDaughterParticles = nDaughter;
-	getPhasespaceEnergies.calculatePhasespaceEnergy(&perEventPhotonEnergies, &perEventWeight);  //energies are in MeV
+	double Efficiency_Geometrical = getGeometricalEfficiency(nDaughter, nDetected, &perEventPhotonEnergies, &perEventWeight);
 	vector<vector<double>> detEfficiencyCorrectedEvents = getDetectionEfficiencyCorrectedEnergy(perEventPhotonEnergies,nDetected); 
   	vector<vector<double>> perEvntDepositedEnergies = getDepositedEnergy(detEfficiencyCorrectedEvents);
 	vector<double> perEventSmallestDepositedEnergy = getSmallestDepositedEnergy(perEvntDepositedEnergies); 
-	
 	
 	double detectionEfficiency = static_cast<double>(detEfficiencyCorrectedEvents.size())/perEventPhotonEnergies.size();
 
@@ -60,17 +55,10 @@ double RegistrationEfficiency(int nDaughter = 5, int nDetected = 5)
 	}
 	double registration_eff = getRegistrationEfficiency(&energiesWithSmearing, "smeared.root", registrationThreshold1, registrationThreshold2);
     
+     std::cout<<"Fraction of events withing the allowed probability range(Detection Efficiency): " << detectionEfficiency<<std::endl;
+	 std::cout<<"Registration_efficiency(after Detection Efficiency corrected): "<< registration_eff<<std::endl;	
 
-	//h3->Draw();
-	//h4->Draw("same");
-
-    //  h3->SetTitle("Smallest energy deposition by gamma in 4gamma decay(Detection Efficiency included)");
-        //h3->GetXaxis()->SetTitle("Deposited Energy [keV]");
-       // h3->GetYaxis()->SetTitle("Counts");
-         std::cout<<"Fraction of events withing the allowed probability range(Detection Efficiency): " << detectionEfficiency<<std::endl;
-        std::cout<<"Registration_efficiency(after Detection Efficiency corrected): "<< registration_eff<<std::endl;	
-
-	return registration_eff*detectionEfficiency;
+	return registration_eff*detectionEfficiency*Efficiency_Geometrical;
 
    }
 /********************Calculation of efficiency****************************/

@@ -33,7 +33,7 @@ class PhaseSpace
 		    event.SetDecay(parent_particle, numberOfDaughterParticles, masses.data());
 		    return event;
 	    }
-	    void calculatePhasespaceEnergy(std::vector<std::vector<double>> * perEventPhotonEnergies, std::vector<double> * perEventWeight)
+	    void calculatePhasespaceEnergy(std::vector<std::vector<double>> * perEventPhotonEnergies/*, std::vector<double> * perEventWeight*/)
 	    {
 		    TGenPhaseSpace event = generateEvents(5);
 		    double weight = 0.0;
@@ -42,7 +42,7 @@ class PhaseSpace
 		for(int i = 0; i < iteration; i++)
 		{
 			weight = event.Generate();
-			perEventWeight->push_back(weight);
+//			perEventWeight->push_back(weight);
 			for(int j = 0; j < numberOfDaughterParticles ; j++)
 			{
 				TLorentzVector *gamma = event.GetDecay(j);

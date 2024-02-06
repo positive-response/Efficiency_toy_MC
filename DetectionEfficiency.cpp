@@ -56,11 +56,7 @@ vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<doubl
 	  vector<double> energyAfterDetEfficiency{};
 	  vector<double> perEnergyDetEfficiency{};
 	   vector<double> efficiencyProd{};
-	   double averageEffeciency = 0.0;
-	  
-	  double weight = 1.0;
-	 
-
+	   double weight = 1.0;
 	  for(const auto& incomingEnergy : incomingEnergies)
 	  {	  
 		  double calcDetEfficiency = detectionEfficiency.getDetectionEfficiency(incomingEnergy);
@@ -70,7 +66,6 @@ vector<vector<double>> getDetectionEfficiencyCorrectedEnergy(vector<vector<doubl
 		  perEnergyDetEfficiency.push_back(calcDetEfficiency);
 	  }
 			  double guessedDetEfficiency = random->Uniform(0, 1);
-
 			  if(guessedDetEfficiency < weight)
 			  {
 				  Ncount++;

@@ -9,73 +9,89 @@
 
 using namespace std;
 
-double getGeometricalEfficiency(const double , const double, const int, const int);
+double getGeometricalEfficiency(const int, const int, vector<vector<double>>*, vector<double>*);
 double* calculateAcceptance(const double, const double);
 
 double GeometricalEfficiency(const int nParticles, const int minimumNoGamma){
 	const double half_lengthOfDetector = 23.0;  //in cm
 	const double radiusOfDetector = 42.5; // in cm
 	double * thetaLimits = calculateAcceptance(radiusOfDetector, half_lengthOfDetector);
-	const double mininumTheta = *(thetaLimits + 0);
-	const double maximumTheta = *(thetaLimits + 1);
-       
-	return getGeometricalEfficiency(mininumTheta, maximumTheta, nParticles, minimumNoGamma);
+//	const double mininumTheta = *(thetaLimits + 0);
+//	const double maximumTheta = *(thetaLimits + 1);
 
+	std::vector<vector<double>> Energies;
+	std::vector<double> EventWeight;
+    
+//	return getGeometricalEfficiency(mininumTheta, maximumTheta, nParticles, minimumNoGamma, &Energies);
+return getGeometricalEfficiency(nParticles, minimumNoGamma, &Energies, &EventWeight);
 }
 
 /************************************************************************************************************/
-double getGeometricalEfficiency(const double theta_min = 1.0472, const double theta_max = 2.0944, const int nDaughter = 5, const int minimumNumberOfGamma = 5)
+double getGeometricalEfficiency( const int nDaughter = 5, const int minimumNumberOfGamma = 5, vector<vector<double>> *Energies = nullptr, vector<double> * EventWeight = nullptr)
 {
-
-//TH3D* h1 = new TH3D("h1", "Position of gamma before geometrical cut", 100, -1, 1, 100,-1,1, 100, -1, 1);
-//TH3D* h2 = new TH3D("h2", "position of gamma after geometrical cut", 100, -1, 1, 100, -1, 1, 100,-1,1);
-//auto h2 = new TH1D("h2", "sum of hits", 720, 0, 720);
-
 	std::vector<vector<double>> gamma_theta_per_event;
 	std::vector<vector<double>> gamma_phi_per_event;
 	std::vector<double> perEventWeight;
-	
-        PhaseSpace getPhaseSpace4;
+	std::vector<vector<double>> perEventPhotonEnergies;	
+    PhaseSpace getPhaseSpace4;
 	getPhaseSpace4.numberOfDaughterParticles = nDaughter;
 	getPhaseSpace4.getAnglesOfDaughterParticles(&gamma_theta_per_event, &gamma_phi_per_event, &perEventWeight);
+	getPhaseSpace4.calculatePhasespaceEnergy(&perEventPhotonEnergies);  //energies are in MeV
         
-        int total = 0;
-        int accepted = 0;
-        int n_min = 0;
+	int total = 0;
+	int accepted = 0;
+	int n_min = 0;
 	const double phi_min = -3.14;
 	const double phi_max = 3.14;
+	const double theta_min = 1.0472;
+	const double theta_max = 2.0944;
 	int r = 0;
 
 	double gamma_theta = 0.0;
 	double gamma_phi = 0.0;
 	int rejected = 0;
+	double wt = 0.0;
+
+	vector<double> en{};
 	for(int i = 0; i < static_cast<int>(perEventWeight.size()); i++)
 	{
 		gamma_theta = 0.0;
 		gamma_phi = 0.0;
 		n_min = 0;
-                total++;
+        total++;
 		r = 0;
 
+		EventWeight->push_back(perEventWeight[i]);
+		
 		for(int j = 0; j < static_cast<int>(gamma_theta_per_event[i].size()); j++)
 		{
 			gamma_theta = gamma_theta_per_event[i][j];
-		        gamma_phi = gamma_phi_per_event[i][j];
-			double sum = 0.0;
+		    gamma_phi = gamma_phi_per_event[i][j];
+			
 			if ((gamma_theta > theta_min) && (gamma_theta < theta_max) && (gamma_phi > phi_min) && (gamma_phi < phi_max))
-			{	 
-				sum += abs(gamma_theta);
-			       	n_min++;
-//				h2->Fill(cos(gamma_theta[j])*sin(gamma_phi[j]), sin(gamma_theta[j])*sin(gamma_phi[j]),cos(gamma_phi[j]));
+			{
+				wt = perEventWeight[i];
+		   		en.push_back(perEventPhotonEnergies[i][j]);
+			    n_min++;
 			}
 			else r++;
-//			h2->Fill(TMath::RadToDeg()*sum);
 		}
 
 		gamma_theta = 0.0;
 		gamma_phi = 0.0; 
-		if (n_min >= minimumNumberOfGamma) accepted++;
-		else rejected++;
+		if (n_min == minimumNumberOfGamma)
+		{	accepted++;
+
+			EventWeight->push_back(wt);
+			Energies->push_back(en);
+			wt = 0.0;
+			en.clear();
+		}
+		else {
+			rejected++;
+			en.clear();
+			wt = 0.0;
+		}
 		n_min = 0;
 	}
 
