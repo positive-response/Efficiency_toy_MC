@@ -35,7 +35,7 @@ class PhaseSpace
 	    }
 	    void calculatePhasespaceEnergy(std::vector<std::vector<double>> * perEventPhotonEnergies/*, std::vector<double> * perEventWeight*/)
 	    {
-		    TGenPhaseSpace event = generateEvents(5);
+		    TGenPhaseSpace event = generateEvents(numberOfDaughterParticles);
 		    double weight = 0.0;
  	            vector<double>energiesOfGamma{};
 
@@ -56,7 +56,7 @@ class PhaseSpace
     
 	    void getAnglesOfDaughterParticles(std::vector<std::vector<double>> * gamma_theta_per_event,  std::vector<std::vector<double>> *gamma_phi_per_event ,std::vector<double> * perEventWeight)
 	    {
-		    TGenPhaseSpace event = generateEvents(5);
+		    TGenPhaseSpace event = generateEvents(numberOfDaughterParticles);
 		    double weight = 0.0;
 		    vector<double>  gamma_theta{};
 		    vector<double>  gamma_phi{};

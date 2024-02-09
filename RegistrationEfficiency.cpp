@@ -43,7 +43,7 @@ double RegistrationEfficiency(int nDaughter = 5, int nDetected = 5)
 
 	const double smear_const = 0.044;
 	const double registrationThreshold1 = 30.0;
-	const double registrationThreshold2 = 50.0;
+	const double registrationThreshold2 = 200.0;
 	for(int i = 0; i < static_cast<int>(perEventSmallestDepositedEnergy.size()); i++)
 	{
 		double energy = perEventSmallestDepositedEnergy[i];
@@ -63,7 +63,7 @@ double RegistrationEfficiency(int nDaughter = 5, int nDetected = 5)
    }
 /********************Calculation of efficiency****************************/
 
-double getRegistrationEfficiency(vector<double>* energiesWithSmearing, const char* filename, const double lowerThreshold = 30.0, const double upperThreshold = 55.0)
+double getRegistrationEfficiency(vector<double>* energiesWithSmearing, const char* filename, const double lowerThreshold = 30.0, const double upperThreshold = 200.0)
 {
   const int numberOfThreshold = 20;
   double Thresholds[numberOfThreshold] = {0.0}; 
